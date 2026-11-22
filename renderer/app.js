@@ -2377,8 +2377,8 @@ async function raInit(){
   try{RA.profile=await api.raProfile();if(RA.profile){pts.innerHTML="";if(RA.profile.pic){const im=new Image();im.src=RA.profile.pic;im.alt="";pts.append(im)}const b=document.createElement("b");b.textContent=raPts(RA.profile).toLocaleString()+" pts";pts.append(b,document.createTextNode(" · "+RA.profile.user));pts.hidden=false}}catch{}
   raShelfLoad();
 }
-// Settings → Accounts & services → RetroAchievements → Points shown: ui.raPoints "both" (default), "hard" or "soft"
-function raPts(p){p=p||{};const h=+p.points||0,s=+p.softcore||0,m=cfgInfo&&cfgInfo.config&&cfgInfo.config.ui&&cfgInfo.config.ui.raPoints;return m==="hard"?h:m==="soft"?s:h+s}
+// Settings → Accounts & services → RetroAchievements → Points shown: ui.raPoints "hard" (default) or "soft"
+function raPts(p){p=p||{};const h=+p.points||0,s=+p.softcore||0,m=cfgInfo&&cfgInfo.config&&cfgInfo.config.ui&&cfgInfo.config.ui.raPoints;return m==="soft"?s:h}
 function raHas(s){return !!s&&((RA.on&&RA.systems.includes(s.id))||achLocal(s))}
 async function raShelfLoad(){
   const busy=raShelfLoad.busy||(raShelfLoad.busy=new Set()),s=cur();if(!raHas(s)||RA.shelf[s.id]||busy.has(s.id))return; // busy: the quick menu, a shelf switch and refresh() can all ask at once; one request is enough
