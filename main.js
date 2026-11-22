@@ -731,7 +731,7 @@ async function buildLibrary() {
   if (pc.quiver !== false) try { mine.push(...pcgames.quiverGames(pc.quiverPath)); } catch (e) { log('Quiver library', e.message); }
   try { mine.push(...pcgames.customGames(pc.custom)); } catch (e) { log('Custom games', e.message); }
   // (Linux) installed Flatpak games (recomps and ports from Flathub) join the Custom shelf, like the ones added by hand
-  try { const have = new Set(mine.map(g => String(g.exe || '').toLowerCase())); mine.push(...pcgames.flatpakGames().filter(g => !have.has(g.exe.toLowerCase()))); } catch (e) { log('Flatpak games', e.message); }
+  if (pc.flatpak !== false) try { const have = new Set(mine.map(g => String(g.exe || '').toLowerCase())); mine.push(...pcgames.flatpakGames().filter(g => !have.has(g.exe.toLowerCase()))); } catch (e) { log('Flatpak games', e.message); }
   for (const g of [...epic, ...mine]) { const t = ownTitle(g.id); if (t) { g.fileTitle = g.title; g.title = t; } } // (beta.5: renamed in Details)
   pcgames.remember([...epic, ...mine]);
   // (Steam art by title only for Epic's store games: a recomp or a program added by hand often shares its name with an
@@ -1963,7 +1963,8 @@ handle('pc:status', async () => { const pc = cfg.pc || {}; let epic = null; try 
   // (beta.7) each store's installed games, counted whether its switch is on or not (Settings says what it would add)
   const n = async f => { try { return (await f()).length; } catch { return null; } };
   const [gog, ubisoft, ea, xbox] = await Promise.all([n(pcgames.gogGames), n(pcgames.ubisoftGames), n(pcgames.eaGames), n(pcgames.xboxGames)]);
-  return { quiver: pcgames.quiverRoots(pc.quiverPath)[0] || '', epic, gog, ubisoft, ea, xbox }; });
+  let flatpak = null; try { flatpak = process.platform === 'linux' ? pcgames.flatpakGames().length : null; } catch {}
+  return { quiver: pcgames.quiverRoots(pc.quiverPath)[0] || '', epic, gog, ubisoft, ea, xbox, flatpak }; });
 handle('pc:findQuiver', () => { const t0 = Date.now(), d = pcgames.quiverFind(); log('Find Quiver:', d ? 'found' : 'not found', Date.now() - t0, 'ms'); return d || ''; });
 // the reading corner: your Magazines\ and Guides\ folders (the screen only ever names items by id)
 handle('library:list', () => { try { library.setCacheRoot(path.join(app.getPath('userData'), 'library')); return library.list().map(i => ({ id: i.id, kind: i.kind, type: i.type, title: i.title, series: i.series || '', pages: i.pages || 0 })); } catch (e) { log('library', e.message); return []; } });
