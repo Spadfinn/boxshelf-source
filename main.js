@@ -730,8 +730,8 @@ async function buildLibrary() {
   try { epic.push(...await pcgames.storeGames(pc)); } catch (e) { log('PC stores', e.message); }
   if (pc.quiver !== false) try { mine.push(...pcgames.quiverGames(pc.quiverPath)); } catch (e) { log('Quiver library', e.message); }
   try { mine.push(...pcgames.customGames(pc.custom)); } catch (e) { log('Custom games', e.message); }
-  // (Linux) installed Flatpak games (recomps and ports from Flathub) join the Custom shelf, like the ones added by hand
-  if (pc.flatpak !== false) try { const have = new Set(mine.map(g => String(g.exe || '').toLowerCase())); mine.push(...pcgames.flatpakGames().filter(g => !have.has(g.exe.toLowerCase()))); } catch (e) { log('Flatpak games', e.message); }
+  // (Linux) installed Flatpak games (recomps and ports from Flathub) join the PC shelf with the store games
+  if (pc.flatpak !== false) try { const have = new Set(mine.map(g => String(g.exe || '').toLowerCase())); epic.push(...pcgames.flatpakGames().filter(g => !have.has(g.exe.toLowerCase()))); } catch (e) { log('Flatpak games', e.message); }
   for (const g of [...epic, ...mine]) { const t = ownTitle(g.id); if (t) { g.fileTitle = g.title; g.title = t; } } // (beta.5: renamed in Details)
   pcgames.remember([...epic, ...mine]);
   // (Steam art by title only for Epic's store games: a recomp or a program added by hand often shares its name with an
